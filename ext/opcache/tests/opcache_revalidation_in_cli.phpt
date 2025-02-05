@@ -3,7 +3,7 @@ Check opcache revalidation in long running scripts
 --INI--
 opcache.enable=1
 opcache.enable_cli=1
-opcache.revalidate_freq=5
+opcache.revalidate_freq=4
 --EXTENSIONS--
 opcache
 --FILE--
@@ -14,11 +14,18 @@ file_put_contents($tmp, '<?php return "a";');
 $v = require $tmp;
 var_dump($v);
 
-sleep(10);
+sleep(2);
 
 file_put_contents($tmp, '<?php return "b";');
 $v = require $tmp;
 var_dump($v);
+
+sleep(4);
+
+file_put_contents($tmp, '<?php return "c";');
+$v = require $tmp;
+var_dump($v);
+
 ?>
 --CLEAN--
 <?php
@@ -26,4 +33,5 @@ var_dump($v);
 ?>
 --EXPECTF--
 string(1) "a"
-string(1) "b"
+string(1) "a"
+string(1) "c"
